@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace VainZero.Timermaid.Desktop
+namespace VainZero.Timermaid.ScheduleLists
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ScheduleListWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ScheduleListWindow : Window
     {
-        public MainWindow()
+        public ScheduleListWindow()
         {
             InitializeComponent();
         }
