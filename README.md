@@ -1,0 +1,2 @@
+## Timermaid
+Simple timer app.
