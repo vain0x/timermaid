@@ -80,6 +80,11 @@ namespace VainZero.Timermaid.Data.Entity
 
         public IDisposable Subscribe(BindableCollection<TEntity> collection)
         {
+            foreach (var entity in collection)
+            {
+                Context.Set<TEntity>().Attach(entity);
+            }
+
             collection.Added += OnAdded;
             collection.Removed += OnRemoved;
             collection.ItemChanged += OnItemChanged;
