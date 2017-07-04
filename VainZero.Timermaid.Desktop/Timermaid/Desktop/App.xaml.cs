@@ -38,6 +38,7 @@ namespace VainZero.Timermaid.Desktop
         {
             AppMain.Dispose();
             ScheduleListWindowContainer.Dispose();
+            NotifyIcon.Dispose();
 
             base.OnExit(e);
         }
