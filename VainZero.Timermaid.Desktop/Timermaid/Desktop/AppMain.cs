@@ -44,6 +44,11 @@ namespace VainZero.Timermaid.Desktop
             }
         }
 
+        public void Start()
+        {
+            SubscribeSchedulerTask();
+        }
+
         public void Dispose()
         {
             CancellationTokenSource.Cancel();
@@ -76,9 +81,7 @@ namespace VainZero.Timermaid.Desktop
         {
             var cts = new CancellationTokenSource();
             var schedulerTask = LoadSchedulerAsync(cts.Token);
-            var appMain = new AppMain(cts, schedulerTask);
-            appMain.SubscribeSchedulerTask();
-            return appMain;
+            return new AppMain(cts, schedulerTask);
         }
     }
 }
