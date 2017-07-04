@@ -21,6 +21,29 @@ namespace VainZero.Timermaid.Desktop
 
         public Task<Scheduler> SchedulerTask { get; }
 
+        public event EventHandler<Exception> ExceptionThrew;
+
+        void OnError(Exception error)
+        {
+            ExceptionThrew?.Invoke(this, error);
+        }
+
+        async void SubscribeSchedulerTask()
+        {
+            try
+            {
+                var scheduler = await SchedulerTask;
+                scheduler.ExceptionThrew += (sender, e) =>
+                {
+                    OnError(e);
+                };
+            }
+            catch (Exception e)
+            {
+                OnError(e);
+            }
+        }
+
         public void Dispose()
         {
             CancellationTokenSource.Cancel();
@@ -52,7 +75,10 @@ namespace VainZero.Timermaid.Desktop
         public static AppMain Load()
         {
             var cts = new CancellationTokenSource();
-            return new AppMain(cts, LoadSchedulerAsync(cts.Token));
+            var schedulerTask = LoadSchedulerAsync(cts.Token);
+            var appMain = new AppMain(cts, schedulerTask);
+            appMain.SubscribeSchedulerTask();
+            return appMain;
         }
     }
 }
