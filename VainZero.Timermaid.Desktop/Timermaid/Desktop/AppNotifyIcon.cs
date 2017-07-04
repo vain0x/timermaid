@@ -38,6 +38,7 @@ namespace VainZero.Timermaid.Desktop
             InitializeComponent();
 
             notifyIcon.Icon = Resources.Resource.timermaid;
+            notifyIcon.DoubleClick += (sender, e) => ShowCommand?.Execute(null);
             notifyIconMenuShow.Click += (sender, e) => ShowCommand?.Execute(null);
             notifyIconMenuQuit.Click += (sender, e) => QuitCommand?.Execute(null);
         }
