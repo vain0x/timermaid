@@ -72,6 +72,7 @@
     <Compile Include="Timermaid\Data\Entity\Implementations\AutoSaveObserver.cs" />
     <Compile Include="Timermaid\Data\Entity\BindableCollectionExtension.cs" />
     <Compile Include="Timermaid\Data\Entity\Entities\Schedule.cs" />
+    <Compile Include="Timermaid\Scheduling\ScheduleExecutionException.cs" />
     <Compile Include="Timermaid\Scheduling\Scheduler.cs" />
   </ItemGroup>
   <ItemGroup>

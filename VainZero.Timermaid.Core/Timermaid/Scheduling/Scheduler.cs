@@ -23,7 +23,7 @@ namespace VainZero.Timermaid.Scheduling
         Dictionary<Schedule, IDisposable> Timers { get; } =
             new Dictionary<Schedule, IDisposable>();
 
-        public event EventHandler<Exception> ExceptionThrew;
+        public event EventHandler<ScheduleExecutionException> ExceptionThrew;
 
         public void AddSchedule(Schedule schedule)
         {
@@ -43,7 +43,10 @@ namespace VainZero.Timermaid.Scheduling
                         }
                         catch (Exception ex)
                         {
-                            ExceptionThrew?.Invoke(this, ex);
+                            ExceptionThrew?.Invoke(
+                                this,
+                                new ScheduleExecutionException(schedule, ex)
+                            );
                         }
                     },
                     default(object),

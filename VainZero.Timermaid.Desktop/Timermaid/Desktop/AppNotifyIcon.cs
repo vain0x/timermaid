@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace VainZero.Timermaid.Desktop
@@ -13,6 +14,17 @@ namespace VainZero.Timermaid.Desktop
     {
         public ICommand ShowCommand { get; set; }
         public ICommand QuitCommand { get; set; }
+
+        public void NotifyError(Exception error)
+        {
+            var timeOutMilliseconds = 5000;
+            notifyIcon.ShowBalloonTip(
+                timeOutMilliseconds,
+                error.Message,
+                error.ToString(),
+                ToolTipIcon.Error
+            );
+        }
 
         public AppNotifyIcon()
         {

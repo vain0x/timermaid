@@ -30,6 +30,8 @@ namespace VainZero.Timermaid.Desktop
             base.OnStartup(e);
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            AppMain.Start();
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -55,6 +57,11 @@ namespace VainZero.Timermaid.Desktop
                     QuitCommand =
                         new DelegateCommand(Shutdown),
                 };
+
+            AppMain.ExceptionThrew += (sender, error) =>
+            {
+                NotifyIcon.NotifyError(error);
+            };
         }
     }
 }
