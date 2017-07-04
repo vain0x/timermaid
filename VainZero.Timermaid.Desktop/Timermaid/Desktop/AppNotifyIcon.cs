@@ -26,6 +26,12 @@ namespace VainZero.Timermaid.Desktop
             );
         }
 
+        public new void Dispose()
+        {
+            notifyIcon.Visible = false;
+            base.Dispose();
+        }
+
         public AppNotifyIcon()
         {
             InitializeComponent();
