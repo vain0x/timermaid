@@ -19,41 +19,21 @@ namespace VainZero.Timermaid.Scheduling
     {
         public BindableCollection<Schedule> Schedules { get; }
 
+        public ScheduleExecutor Executor { get; } =
+            new ScheduleExecutor();
+
         #region Timer
         Dictionary<Schedule, IDisposable> Timers { get; } =
             new Dictionary<Schedule, IDisposable>();
 
-        public event EventHandler<ScheduleExecutionException> ExceptionThrew;
-
         public void AddSchedule(Schedule schedule)
         {
             if (Timers.ContainsKey(schedule)) return;
-            if (schedule.Status != ScheduleStatus.Enabled) return;
 
-            var dueTime = schedule.DueTime - DateTime.Now;
-            if (dueTime <= TimeSpan.Zero) return;
-
-            var timer =
-                new Timer(
-                    state =>
-                    {
-                        try
-                        {
-                            Process.Start(schedule.FilePath, schedule.Argument);
-                        }
-                        catch (Exception ex)
-                        {
-                            ExceptionThrew?.Invoke(
-                                this,
-                                new ScheduleExecutionException(schedule, ex)
-                            );
-                        }
-                    },
-                    default(object),
-                    dueTime,
-                    Timeout.InfiniteTimeSpan
-                );
-            Timers.Add(schedule, timer);
+            if (Executor.TryStartTimer(schedule, out var timer))
+            {
+                Timers.Add(schedule, timer);
+            }
         }
 
         void RemoveSchedule(Schedule schedule)

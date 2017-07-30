@@ -33,7 +33,7 @@ namespace VainZero.Timermaid.Desktop
             try
             {
                 var scheduler = await SchedulerTask;
-                scheduler.ExceptionThrew += (sender, e) =>
+                scheduler.Executor.ExceptionThrew += (sender, e) =>
                 {
                     OnError(e);
                 };
