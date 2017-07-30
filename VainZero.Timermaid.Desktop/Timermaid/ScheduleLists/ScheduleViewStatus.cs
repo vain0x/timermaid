@@ -48,5 +48,19 @@ namespace VainZero.Timermaid.ScheduleLists
                     throw new InvalidValueException(status);
             }
         }
+
+        public static ScheduleViewStatus Switch(ScheduleViewStatus status)
+        {
+            switch (status)
+            {
+                case ScheduleViewStatus.Running:
+                case ScheduleViewStatus.Stopped:
+                    return ScheduleViewStatus.Disabled;
+                case ScheduleViewStatus.Disabled:
+                    return ScheduleViewStatus.Stopped;
+                default:
+                    return status;
+            }
+        }
     }
 }

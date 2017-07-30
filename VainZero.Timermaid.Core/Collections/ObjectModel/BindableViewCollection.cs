@@ -17,12 +17,14 @@ namespace VainZero.Collections.ObjectModel
 
         protected override void OnAdded(TTarget item)
         {
+            if (Sources == null) return;
             Sources.Add(GetSource(item));
             base.OnAdded(item);
         }
 
         protected override void OnRemoved(TTarget item)
         {
+            if (Sources == null) return;
             Sources.Remove(GetSource(item));
             base.OnRemoved(item);
         }
@@ -30,7 +32,7 @@ namespace VainZero.Collections.ObjectModel
         public BindableViewCollection(IEnumerable<TTarget> targets, ICollection<TSource> sources)
             : base(targets)
         {
-            Sources = sources;
+            Sources = sources ?? throw new ArgumentNullException(nameof(sources));
         }
     }
 }

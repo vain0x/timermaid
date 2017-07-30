@@ -74,6 +74,10 @@
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding Status}" Value="Stopped">
+                            <Setter Property="Background" Value="#FFEEEE" />
+                        </DataTrigger>
+
                         <DataTrigger Binding="{Binding Status}" Value="Hidden">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>

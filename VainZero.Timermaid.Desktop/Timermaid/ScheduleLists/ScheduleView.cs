@@ -31,7 +31,11 @@ namespace VainZero.Timermaid.ScheduleLists
         public DateTime DueTime
         {
             get => Source.DueTime;
-            set => SetProperty(DueTime, x => Source.DueTime = x, value);
+            set
+            {
+                SetProperty(DueTime, x => Source.DueTime = x, value);
+                RaisePropertyChanged(nameof(Status));
+            }
         }
 
         public string FilePath

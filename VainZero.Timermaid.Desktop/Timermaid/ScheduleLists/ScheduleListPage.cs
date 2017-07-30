@@ -20,7 +20,7 @@ namespace VainZero.Timermaid.ScheduleLists
     {
         public Scheduler Scheduler { get; }
 
-        public BindableCollection<Schedule> Schedules => Scheduler.Schedules;
+        public ScheduleViewList Schedules { get; }
 
         public DelegateCommand<object> DisableCommand { get; }
         public DelegateCommand<object> HideCommand { get; }
@@ -35,30 +35,26 @@ namespace VainZero.Timermaid.ScheduleLists
         {
             Scheduler = scheduler;
             DisposeCore = dispose;
+            Schedules = new ScheduleViewList(scheduler, scheduler.Schedules.Select(s => new ScheduleView(s)), scheduler.Schedules);
 
             DisableCommand =
                 new DelegateCommand<object>(
                     parameter =>
                     {
-                        var schedule = (Schedule)parameter;
-                        schedule.Status =
-                            schedule.Status == ScheduleStatus.Enabled
-                                ? ScheduleStatus.Disabled :
-                            schedule.Status == ScheduleStatus.Disabled
-                                ? ScheduleStatus.Enabled :
-                            schedule.Status;
+                        var schedule = (ScheduleView)parameter;
+                        schedule.Status = ScheduleViewStatusModule.Switch(schedule.Status);
                     },
-                    parameter => parameter is Schedule
+                    parameter => parameter is ScheduleView
                 );
 
             HideCommand =
                 new DelegateCommand<object>(
                     parameter =>
                     {
-                        var schedule = (Schedule)parameter;
-                        schedule.Status = ScheduleStatus.Hidden;
+                        var schedule = (ScheduleView)parameter;
+                        schedule.Status = ScheduleViewStatus.Hidden;
                     },
-                    parameter => parameter is Schedule
+                    parameter => parameter is ScheduleView
                 );
         }
 
