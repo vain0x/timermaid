@@ -17,6 +17,8 @@ namespace VainZero.Timermaid.Scheduling
 
         public void Execute(Schedule schedule)
         {
+            if (schedule.Status != ScheduleStatus.Enabled) return;
+
             var retryCount = 5;
             var error = default(ScheduleExecutionException);
 
