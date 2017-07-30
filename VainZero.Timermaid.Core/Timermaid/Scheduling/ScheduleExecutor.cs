@@ -11,20 +11,26 @@ namespace VainZero.Timermaid.Scheduling
 {
     public sealed class ScheduleExecutor
     {
+        public event EventHandler<Tuple<Schedule, ScheduleExecutionException>> Executed;
+
         public event EventHandler<ScheduleExecutionException> ExceptionThrew;
 
         public void Execute(Schedule schedule)
         {
+            var error = default(ScheduleExecutionException);
+
             try
             {
                 Process.Start(schedule.FilePath, schedule.Argument);
             }
             catch (Exception ex)
             {
-                ExceptionThrew?.Invoke(
-                    this,
-                    new ScheduleExecutionException(schedule, ex)
-                );
+                error = new ScheduleExecutionException(schedule, ex);
+                ExceptionThrew?.Invoke(this, error);
+            }
+            finally
+            {
+                Executed?.Invoke(this, Tuple.Create(schedule, error));
             }
         }
 
