@@ -26,14 +26,17 @@ namespace VainZero.Timermaid.Scheduling
         Dictionary<Schedule, IDisposable> Timers { get; } =
             new Dictionary<Schedule, IDisposable>();
 
-        public void AddSchedule(Schedule schedule)
+        public bool AddSchedule(Schedule schedule)
         {
-            if (Timers.ContainsKey(schedule)) return;
+            if (Timers.ContainsKey(schedule)) return false;
 
             if (Executor.TryStartTimer(schedule, out var timer))
             {
                 Timers.Add(schedule, timer);
+                return true;
             }
+
+            return false;
         }
 
         void RemoveSchedule(Schedule schedule)
@@ -80,7 +83,10 @@ namespace VainZero.Timermaid.Scheduling
         {
             foreach (var schedule in Schedules)
             {
-                AddSchedule(schedule);
+                if (!AddSchedule(schedule))
+                {
+                    schedule.Disable();
+                }
             }
 
             Schedules.Added += OnScheduleAdded;
@@ -89,7 +95,7 @@ namespace VainZero.Timermaid.Scheduling
 
             Executor.Executed += (sender, e) =>
             {
-                e.Item1.Status = ScheduleStatus.Disabled;
+                e.Item1.Disable();
             };
         }
 

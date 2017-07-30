@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Prism.Mvvm;
+using VainZero.Misc;
 
 namespace VainZero.Timermaid.Data.Entity
 {
@@ -72,6 +73,21 @@ namespace VainZero.Timermaid.Data.Entity
         {
             get => status;
             set => SetProperty(ref status, value);
+        }
+
+        public void Disable()
+        {
+            switch (Status)
+            {
+                case ScheduleStatus.Enabled:
+                    Status = ScheduleStatus.Disabled;
+                    break;
+                case ScheduleStatus.Disabled:
+                case ScheduleStatus.Hidden:
+                    break;
+                default:
+                    throw new InvalidValueException(Status);
+            }
         }
 
         public Schedule()
