@@ -86,6 +86,11 @@ namespace VainZero.Timermaid.Scheduling
             Schedules.Added += OnScheduleAdded;
             Schedules.Removed += OnScheduleRemoved;
             Schedules.ItemChanged += OnScheduleChanged;
+
+            Executor.Executed += (sender, e) =>
+            {
+                e.Item1.Status = ScheduleStatus.Disabled;
+            };
         }
 
         void Detach()
