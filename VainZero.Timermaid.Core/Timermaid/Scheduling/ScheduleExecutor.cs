@@ -17,21 +17,36 @@ namespace VainZero.Timermaid.Scheduling
 
         public void Execute(Schedule schedule)
         {
+            var retryCount = 5;
             var error = default(ScheduleExecutionException);
 
-            try
+            while (true)
             {
-                Process.Start(schedule.FilePath, schedule.Argument);
+                try
+                {
+                    Process.Start(schedule.FilePath, schedule.Argument);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (retryCount > 0)
+                    {
+                        retryCount--;
+                        Thread.Sleep(1);
+                        continue;
+                    }
+
+                    error = new ScheduleExecutionException(schedule, ex);
+                    break;
+                }
             }
-            catch (Exception ex)
+
+            if (error != null)
             {
-                error = new ScheduleExecutionException(schedule, ex);
                 ExceptionThrew?.Invoke(this, error);
             }
-            finally
-            {
-                Executed?.Invoke(this, Tuple.Create(schedule, error));
-            }
+
+            Executed?.Invoke(this, Tuple.Create(schedule, error));
         }
 
         public bool TryStartTimer(Schedule schedule, out Timer timer)
