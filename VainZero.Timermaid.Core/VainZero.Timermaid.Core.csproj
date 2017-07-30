@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\ObjectModel\BindableCollection.cs" />
+    <Compile Include="Collections\ObjectModel\BindableViewCollection.cs" />
     <Compile Include="Collections\ObjectModel\ReactiveCollection.cs" />
     <Compile Include="Misc\InvalidValueException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
