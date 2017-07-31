@@ -36,6 +36,10 @@ namespace VainZero.Timermaid.Desktop
                 new DelegateCommand(ScheduleListWindowContainer.ActivateOrCreate);
             NotifyIcon.QuitCommand =
                 new DelegateCommand(Shutdown);
+
+#if DEBUG
+            ScheduleListWindowContainer.ActivateOrCreate();
+#endif
         }
 
         protected override void OnExit(ExitEventArgs e)
