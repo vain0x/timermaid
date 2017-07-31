@@ -69,7 +69,6 @@
     <Compile Include="Misc\InvalidValueException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timermaid\Data\Entity\AppDbContext.cs" />
-    <Compile Include="Timermaid\Data\Entity\AppDbInitializer.cs" />
     <Compile Include="Timermaid\Data\Entity\Implementations\AutoSaveObserver.cs" />
     <Compile Include="Timermaid\Data\Entity\BindableCollectionExtension.cs" />
     <Compile Include="Timermaid\Data\Entity\Entities\Schedule.cs" />
