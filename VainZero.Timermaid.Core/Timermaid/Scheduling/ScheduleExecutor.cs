@@ -55,7 +55,7 @@ namespace VainZero.Timermaid.Scheduling
         {
             if (schedule.Status == ScheduleStatus.Enabled)
             {
-                var dueTime = schedule.DueTime - DateTime.Now;
+                var dueTime = schedule.DueTimeUtc - DateTime.UtcNow;
                 if (dueTime > TimeSpan.Zero)
                 {
                     timer =

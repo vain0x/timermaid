@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using VainZero.Misc;
 
 namespace VainZero.Windows.Converters
 {
@@ -20,7 +21,7 @@ namespace VainZero.Windows.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var dateTime = (DateTime?)value;
-            return dateTime?.ToString(Format(parameter));
+            return dateTime?.ToLocalTime().ToString(Format(parameter));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -28,7 +29,14 @@ namespace VainZero.Windows.Converters
             var source = (string)value;
             if (string.IsNullOrWhiteSpace(source)) return default(DateTime?);
 
-            if (DateTime.TryParse(source, out var dateTime)) return dateTime;
+            if (DateTime.TryParse(source, out var dateTime))
+            {
+                if (dateTime.Kind == DateTimeKind.Unspecified)
+                {
+                    dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Local);
+                }
+                return dateTime.ToUniversalTime();
+            }
 
             return DependencyProperty.UnsetValue;
         }

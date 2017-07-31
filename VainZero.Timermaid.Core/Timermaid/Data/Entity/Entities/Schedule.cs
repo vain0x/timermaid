@@ -37,13 +37,17 @@ namespace VainZero.Timermaid.Data.Entity
             set => SetProperty(ref name, value);
         }
 
-        DateTime dueTime;
+        DateTime dueTimeUtc;
 
         [Column("due_time")]
-        public DateTime DueTime
+        public DateTime DueTimeUtc
         {
-            get => dueTime;
-            set => SetProperty(ref dueTime, value);
+            get => dueTimeUtc;
+            set
+            {
+                if (value.Kind != DateTimeKind.Utc) throw new ArgumentException(nameof(value));
+                SetProperty(ref dueTimeUtc, value);
+            }
         }
 
         string filePath;
@@ -92,7 +96,7 @@ namespace VainZero.Timermaid.Data.Entity
 
         public Schedule()
         {
-            DueTime = DateTime.Now;
+            DueTimeUtc = DateTime.UtcNow;
         }
     }
 
