@@ -75,6 +75,9 @@
     <Compile Include="Timermaid\Scheduling\ScheduleExecutionException.cs" />
     <Compile Include="Timermaid\Scheduling\ScheduleExecutor.cs" />
     <Compile Include="Timermaid\Scheduling\Scheduler.cs" />
+    <Compile Include="Timermaid\UI\Logging\ILogger.cs" />
+    <Compile Include="Timermaid\UI\Logging\LogItem.cs" />
+    <Compile Include="Timermaid\UI\Logging\MemoryLogger.cs" />
     <Compile Include="Timermaid\UI\Notifications\INotifier.cs" />
     <Compile Include="Timermaid\UI\Notifications\NotifierExtension.cs" />
   </ItemGroup>

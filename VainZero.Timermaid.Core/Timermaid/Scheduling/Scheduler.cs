@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VainZero.Collections.ObjectModel;
 using VainZero.Timermaid.Data.Entity;
+using VainZero.Timermaid.UI.Logging;
 using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.Scheduling
@@ -20,9 +21,11 @@ namespace VainZero.Timermaid.Scheduling
     {
         public BindableCollection<Schedule> Schedules { get; }
 
-        public ScheduleExecutor Executor { get; }
+        ScheduleExecutor Executor { get; }
 
-        #region Timer
+        ILogger Logger { get; }
+
+        #region Timers
         Dictionary<Schedule, IDisposable> Timers { get; } =
             new Dictionary<Schedule, IDisposable>();
 
@@ -77,7 +80,22 @@ namespace VainZero.Timermaid.Scheduling
             RemoveSchedule(e);
             AddSchedule(e);
         }
+
+        public IReadOnlyList<Schedule> ActiveSchedules()
+        {
+            return
+                Timers
+                .Select(kv => kv.Key).Where(s => s.Status == ScheduleStatus.Enabled)
+                .ToArray();
+        }
         #endregion
+
+        static void LogExecution(ILogger logger, Tuple<Schedule, ScheduleExecutionException> t)
+        {
+            var schedule = t.Item1;
+            var adverb = t.Item2 == null ? "successfully" : "exceptionally";
+            logger.Add($"Executed schedule '{schedule.Name}' {adverb}.");
+        }
 
         void Attach()
         {
@@ -95,6 +113,7 @@ namespace VainZero.Timermaid.Scheduling
 
             Executor.Executed += (sender, e) =>
             {
+                LogExecution(Logger, e);
                 e.Item1.Disable();
             };
         }
@@ -113,18 +132,20 @@ namespace VainZero.Timermaid.Scheduling
             Detach();
         }
 
-        Scheduler(BindableCollection<Schedule> schedules, ScheduleExecutor executor)
+        Scheduler(BindableCollection<Schedule> schedules, ScheduleExecutor executor, ILogger logger)
         {
             Schedules = schedules;
             Executor = executor;
+            Logger = logger;
         }
 
-        public static Scheduler Load(IEnumerable<Schedule> schedules, INotifier notifier)
+        public static Scheduler Load(IEnumerable<Schedule> schedules, INotifier notifier, ILogger logger)
         {
             var scheduler =
                 new Scheduler(
                     new BindableCollection<Schedule>(schedules),
-                    new ScheduleExecutor(notifier)
+                    new ScheduleExecutor(notifier),
+                    logger
                 );
             scheduler.Attach();
             return scheduler;

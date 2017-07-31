@@ -11,6 +11,7 @@ using Prism.Commands;
 using VainZero.Timermaid.Data.Entity;
 using VainZero.Timermaid.ScheduleLists;
 using VainZero.Timermaid.Scheduling;
+using VainZero.Timermaid.UI.Logging;
 using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.Desktop
@@ -61,11 +62,13 @@ namespace VainZero.Timermaid.Desktop
                 NotifyIcon.NotifyError(error);
             };
 
-            AppMain = AppMain.Load(notifier);
+            var logger = new MemoryLogger();
+
+            AppMain = AppMain.Load(notifier, logger);
 
             ScheduleListWindowContainer =
                 new ScheduleListWindowContainer(() =>
-                    ScheduleListView.Load(AppMain.SchedulerTask.Result, notifier)
+                    ScheduleListView.Load(AppMain.SchedulerTask.Result, notifier, logger)
                 );
         }
     }
