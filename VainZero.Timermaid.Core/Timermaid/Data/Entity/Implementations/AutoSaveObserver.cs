@@ -22,7 +22,7 @@ namespace VainZero.Timermaid.Data.Entity
 
         Action<Exception> OnError { get; }
 
-        void SaveAsync()
+        void StartSaveTask()
         {
             var currentRevision = ++revision;
             LastTask =
@@ -44,18 +44,18 @@ namespace VainZero.Timermaid.Data.Entity
         public void OnAdded(object sender, TEntity entity)
         {
             Set.Add(entity);
-            SaveAsync();
+            StartSaveTask();
         }
 
         public void OnRemoved(object sender, TEntity entity)
         {
             Set.Remove(entity);
-            SaveAsync();
+            StartSaveTask();
         }
 
         public void OnItemChanged(object sender, TEntity entity)
         {
-            SaveAsync();
+            StartSaveTask();
         }
 
         public void Dispose()
