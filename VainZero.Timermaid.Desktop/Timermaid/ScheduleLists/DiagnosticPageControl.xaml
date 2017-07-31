@@ -12,7 +12,8 @@
     >
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="2*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
@@ -35,7 +36,21 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="1">
+        <DataGrid
+            Grid.Row="1"
+            Margin="6,3,6,3"
+            Style="{StaticResource NormalDataGridStyle}"
+            ItemsSource="{Binding ActiveSchedules}"
+            >
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Header="Name"
+                    Binding="{Binding Name}"
+                    />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2">
             <Button
                 HorizontalAlignment="Right"
                 Margin="6,3,6,3"

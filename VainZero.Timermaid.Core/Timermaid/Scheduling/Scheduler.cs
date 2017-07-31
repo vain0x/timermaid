@@ -25,7 +25,7 @@ namespace VainZero.Timermaid.Scheduling
 
         ILogger Logger { get; }
 
-        #region Timer
+        #region Timers
         Dictionary<Schedule, IDisposable> Timers { get; } =
             new Dictionary<Schedule, IDisposable>();
 
@@ -79,6 +79,14 @@ namespace VainZero.Timermaid.Scheduling
         {
             RemoveSchedule(e);
             AddSchedule(e);
+        }
+
+        public IReadOnlyList<Schedule> ActiveSchedules()
+        {
+            return
+                Timers
+                .Select(kv => kv.Key).Where(s => s.Status == ScheduleStatus.Enabled)
+                .ToArray();
         }
         #endregion
 

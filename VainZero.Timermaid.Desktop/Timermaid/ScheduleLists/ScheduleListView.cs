@@ -32,7 +32,7 @@ namespace VainZero.Timermaid.ScheduleLists
             return
                 new ScheduleListView(
                     ScheduleListPage.Load(scheduler, notifier, logger),
-                    new DiagnosticPage(logger)
+                    new DiagnosticPage(scheduler, logger)
                 );
         }
     }

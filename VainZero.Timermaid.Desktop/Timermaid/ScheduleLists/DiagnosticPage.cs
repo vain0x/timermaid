@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Mvvm;
 using VainZero.Collections.ObjectModel;
+using VainZero.Timermaid.Data.Entity;
+using VainZero.Timermaid.Scheduling;
 using VainZero.Timermaid.UI.Logging;
 
 namespace VainZero.Timermaid.ScheduleLists
@@ -20,15 +22,23 @@ namespace VainZero.Timermaid.ScheduleLists
             set => SetProperty(ref items, value);
         }
 
+        IReadOnlyList<Schedule> activeSchedules;
+        public IReadOnlyList<Schedule> ActiveSchedules
+        {
+            get => activeSchedules;
+            set => SetProperty(ref activeSchedules, value);
+        }
+
         public DelegateCommand<object> UpdateCommand { get; }
 
-        ILogger Logger { get; }
-
-        public DiagnosticPage(ILogger logger)
+        public DiagnosticPage(Scheduler scheduler, ILogger logger)
         {
-            Logger = logger;
-
-            UpdateCommand = new DelegateCommand<object>(_ => Items = logger.ToArray());
+            UpdateCommand =
+                new DelegateCommand<object>(_ =>
+                {
+                    Items = logger.ToArray();
+                    ActiveSchedules = scheduler.ActiveSchedules();
+                });
         }
     }
 }
