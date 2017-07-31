@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VainZero.Timermaid.Scheduling;
+using VainZero.Timermaid.UI.Logging;
 using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.ScheduleLists
@@ -23,9 +24,9 @@ namespace VainZero.Timermaid.ScheduleLists
             ScheduleListPage = scheduleListPage;
         }
 
-        public static ScheduleListView Load(Scheduler scheduler, INotifier notifier)
+        public static ScheduleListView Load(Scheduler scheduler, INotifier notifier, ILogger logger)
         {
-            return new ScheduleListView(ScheduleListPage.Load(scheduler, notifier));
+            return new ScheduleListView(ScheduleListPage.Load(scheduler, notifier, logger));
         }
     }
 }

@@ -16,16 +16,19 @@ namespace VainZero.Timermaid.Data.Entity
                 this BindableCollection<E> @this,
                 DbContext context,
                 TimeSpan delay,
+                Action onSaved,
                 Action<Exception> onError
             )
             where E : class, INotifyPropertyChanged
         {
             var observer =
-                new AutoSaveObserver<E>(
+                new 
+                AutoSaveObserver<E>(
                     @this,
                     context,
                     context.Set<E>(),
                     delay,
+                    onSaved,
                     onError
                 );
             observer.Attach();
