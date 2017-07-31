@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VainZero.Collections.ObjectModel;
 using VainZero.Timermaid.Data.Entity;
+using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.Scheduling
 {
@@ -19,41 +20,23 @@ namespace VainZero.Timermaid.Scheduling
     {
         public BindableCollection<Schedule> Schedules { get; }
 
+        public ScheduleExecutor Executor { get; }
+
         #region Timer
         Dictionary<Schedule, IDisposable> Timers { get; } =
             new Dictionary<Schedule, IDisposable>();
 
-        public event EventHandler<ScheduleExecutionException> ExceptionThrew;
-
-        public void AddSchedule(Schedule schedule)
+        public bool AddSchedule(Schedule schedule)
         {
-            if (Timers.ContainsKey(schedule)) return;
-            if (schedule.Status != ScheduleStatus.Enabled) return;
+            if (Timers.ContainsKey(schedule)) return false;
 
-            var dueTime = schedule.DueTime - DateTime.Now;
-            if (dueTime <= TimeSpan.Zero) return;
+            if (Executor.TryStartTimer(schedule, out var timer))
+            {
+                Timers.Add(schedule, timer);
+                return true;
+            }
 
-            var timer =
-                new Timer(
-                    state =>
-                    {
-                        try
-                        {
-                            Process.Start(schedule.FilePath, schedule.Argument);
-                        }
-                        catch (Exception ex)
-                        {
-                            ExceptionThrew?.Invoke(
-                                this,
-                                new ScheduleExecutionException(schedule, ex)
-                            );
-                        }
-                    },
-                    default(object),
-                    dueTime,
-                    Timeout.InfiniteTimeSpan
-                );
-            Timers.Add(schedule, timer);
+            return false;
         }
 
         void RemoveSchedule(Schedule schedule)
@@ -100,12 +83,20 @@ namespace VainZero.Timermaid.Scheduling
         {
             foreach (var schedule in Schedules)
             {
-                AddSchedule(schedule);
+                if (!AddSchedule(schedule))
+                {
+                    schedule.Disable();
+                }
             }
 
             Schedules.Added += OnScheduleAdded;
             Schedules.Removed += OnScheduleRemoved;
             Schedules.ItemChanged += OnScheduleChanged;
+
+            Executor.Executed += (sender, e) =>
+            {
+                e.Item1.Disable();
+            };
         }
 
         void Detach()
@@ -122,14 +113,19 @@ namespace VainZero.Timermaid.Scheduling
             Detach();
         }
 
-        Scheduler(BindableCollection<Schedule> schedules)
+        Scheduler(BindableCollection<Schedule> schedules, ScheduleExecutor executor)
         {
             Schedules = schedules;
+            Executor = executor;
         }
 
-        public static Scheduler Load(IEnumerable<Schedule> schedules)
+        public static Scheduler Load(IEnumerable<Schedule> schedules, INotifier notifier)
         {
-            var scheduler = new Scheduler(new BindableCollection<Schedule>(schedules));
+            var scheduler =
+                new Scheduler(
+                    new BindableCollection<Schedule>(schedules),
+                    new ScheduleExecutor(notifier)
+                );
             scheduler.Attach();
             return scheduler;
         }

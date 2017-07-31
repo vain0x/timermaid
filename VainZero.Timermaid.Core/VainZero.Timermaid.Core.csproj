@@ -66,14 +66,17 @@
   <ItemGroup>
     <Compile Include="Collections\ObjectModel\BindableCollection.cs" />
     <Compile Include="Collections\ObjectModel\ReactiveCollection.cs" />
+    <Compile Include="Misc\InvalidValueException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timermaid\Data\Entity\AppDbContext.cs" />
-    <Compile Include="Timermaid\Data\Entity\AppDbInitializer.cs" />
     <Compile Include="Timermaid\Data\Entity\Implementations\AutoSaveObserver.cs" />
     <Compile Include="Timermaid\Data\Entity\BindableCollectionExtension.cs" />
     <Compile Include="Timermaid\Data\Entity\Entities\Schedule.cs" />
     <Compile Include="Timermaid\Scheduling\ScheduleExecutionException.cs" />
+    <Compile Include="Timermaid\Scheduling\ScheduleExecutor.cs" />
     <Compile Include="Timermaid\Scheduling\Scheduler.cs" />
+    <Compile Include="Timermaid\UI\Notifications\INotifier.cs" />
+    <Compile Include="Timermaid\UI\Notifications\NotifierExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

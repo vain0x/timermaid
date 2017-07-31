@@ -15,8 +15,8 @@ namespace VainZero.Collections.ObjectModel
     public class ReactiveCollection<T>
         : ObservableCollection<T>
     {
-        public EventHandler<T> Added;
-        public EventHandler<T> Removed;
+        public event EventHandler<T> Added;
+        public event EventHandler<T> Removed;
 
         protected virtual void OnAdded(T item)
         {

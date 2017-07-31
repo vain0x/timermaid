@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Prism.Mvvm;
+using VainZero.Misc;
 
 namespace VainZero.Timermaid.Data.Entity
 {
@@ -36,13 +37,17 @@ namespace VainZero.Timermaid.Data.Entity
             set => SetProperty(ref name, value);
         }
 
-        DateTime dueTime;
+        DateTime dueTimeUtc;
 
         [Column("due_time")]
-        public DateTime DueTime
+        public DateTime DueTimeUtc
         {
-            get => dueTime;
-            set => SetProperty(ref dueTime, value);
+            get => dueTimeUtc;
+            set
+            {
+                if (value.Kind != DateTimeKind.Utc) throw new ArgumentException(nameof(value));
+                SetProperty(ref dueTimeUtc, value);
+            }
         }
 
         string filePath;
@@ -74,9 +79,24 @@ namespace VainZero.Timermaid.Data.Entity
             set => SetProperty(ref status, value);
         }
 
+        public void Disable()
+        {
+            switch (Status)
+            {
+                case ScheduleStatus.Enabled:
+                    Status = ScheduleStatus.Disabled;
+                    break;
+                case ScheduleStatus.Disabled:
+                case ScheduleStatus.Hidden:
+                    break;
+                default:
+                    throw new InvalidValueException(Status);
+            }
+        }
+
         public Schedule()
         {
-            DueTime = DateTime.Now;
+            DueTimeUtc = DateTime.UtcNow;
         }
     }
 
