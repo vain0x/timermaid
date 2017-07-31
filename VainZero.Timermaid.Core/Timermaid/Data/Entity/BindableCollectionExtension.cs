@@ -20,13 +20,16 @@ namespace VainZero.Timermaid.Data.Entity
             )
             where E : class, INotifyPropertyChanged
         {
-            return
+            var observer =
                 new AutoSaveObserver<E>(
+                    @this,
                     context,
                     context.Set<E>(),
                     delay,
                     onError
-                ).Subscribe(@this);
+                );
+            observer.Attach();
+            return observer;
         }
     }
 }
