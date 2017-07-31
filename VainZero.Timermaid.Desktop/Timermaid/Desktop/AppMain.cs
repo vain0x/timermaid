@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VainZero.Timermaid.Data.Entity;
 using VainZero.Timermaid.Scheduling;
+using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.Desktop
 {
@@ -20,34 +21,6 @@ namespace VainZero.Timermaid.Desktop
             CancellationTokenSource.Token;
 
         public Task<Scheduler> SchedulerTask { get; }
-
-        public event EventHandler<Exception> ExceptionThrew;
-
-        void OnError(Exception error)
-        {
-            ExceptionThrew?.Invoke(this, error);
-        }
-
-        async void SubscribeSchedulerTask()
-        {
-            try
-            {
-                var scheduler = await SchedulerTask;
-                scheduler.Executor.ExceptionThrew += (sender, e) =>
-                {
-                    OnError(e);
-                };
-            }
-            catch (Exception e)
-            {
-                OnError(e);
-            }
-        }
-
-        public void Start()
-        {
-            SubscribeSchedulerTask();
-        }
 
         public void Dispose()
         {
@@ -68,19 +41,21 @@ namespace VainZero.Timermaid.Desktop
             SchedulerTask = schedulerTask;
         }
 
-        static async Task<Scheduler> LoadSchedulerAsync(CancellationToken cancellationToken)
+        static async Task<Scheduler> LoadSchedulerAsync(INotifier notifier, CancellationToken ct)
         {
             using (var context = new AppDbContext())
             {
-                var schedules = await context.Schedules.ToArrayAsync(cancellationToken);
-                return Scheduler.Load(schedules);
+                var schedules = await context.Schedules.ToArrayAsync(ct).ConfigureAwait(false);
+                return Scheduler.Load(schedules, notifier);
             }
         }
 
-        public static AppMain Load()
+        public static AppMain Load(INotifier notifier)
         {
             var cts = new CancellationTokenSource();
-            var schedulerTask = LoadSchedulerAsync(cts.Token);
+            var schedulerTask =
+                LoadSchedulerAsync(notifier, cts.Token)
+                .NotifiedBy(notifier);
             return new AppMain(cts, schedulerTask);
         }
     }

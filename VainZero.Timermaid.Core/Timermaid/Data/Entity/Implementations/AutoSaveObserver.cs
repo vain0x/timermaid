@@ -20,6 +20,8 @@ namespace VainZero.Timermaid.Data.Entity
         Task LastTask { get; set; } = Task.FromResult(0);
         long revision;
 
+        Action<Exception> OnError { get; }
+
         void SaveAsync()
         {
             var currentRevision = ++revision;
@@ -28,7 +30,14 @@ namespace VainZero.Timermaid.Data.Entity
                 {
                     await Task.Delay(Delay).ConfigureAwait(false);
                     if (revision != currentRevision) return;
-                    await Context.SaveChangesAsync();
+                    try
+                    {
+                        await Context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        OnError(ex);
+                    }
                 });
         }
 
@@ -95,12 +104,14 @@ namespace VainZero.Timermaid.Data.Entity
             AutoSaveObserver(
                 DbContext context,
                 DbSet<TEntity> set,
-                TimeSpan delay
+                TimeSpan delay,
+                Action<Exception> onError
             )
         {
             Context = context;
             Set = set;
             Delay = delay;
+            OnError = onError;
         }
     }
 }

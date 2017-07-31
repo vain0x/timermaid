@@ -15,7 +15,8 @@ namespace VainZero.Timermaid.Data.Entity
             EnableAutoSave<E>(
                 this BindableCollection<E> @this,
                 DbContext context,
-                TimeSpan delay
+                TimeSpan delay,
+                Action<Exception> onError
             )
             where E : class, INotifyPropertyChanged
         {
@@ -23,7 +24,8 @@ namespace VainZero.Timermaid.Data.Entity
                 new AutoSaveObserver<E>(
                     context,
                     context.Set<E>(),
-                    delay
+                    delay,
+                    onError
                 ).Subscribe(@this);
         }
     }

@@ -96,6 +96,7 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="Timermaid\ScheduleLists\ScheduleListWindowContainer.cs" />
+    <Compile Include="Timermaid\UI\Notifications\GuiNotifier.cs" />
     <Compile Include="Windows\Converters\NullableDateTimeToStringConverter.cs" />
     <Page Include="Timermaid\Desktop\AppResource.xaml">
       <SubType>Designer</SubType>

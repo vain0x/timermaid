@@ -11,6 +11,7 @@ using Prism.Commands;
 using VainZero.Timermaid.Data.Entity;
 using VainZero.Timermaid.ScheduleLists;
 using VainZero.Timermaid.Scheduling;
+using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.Desktop
 {
@@ -31,7 +32,10 @@ namespace VainZero.Timermaid.Desktop
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            AppMain.Start();
+            NotifyIcon.ShowCommand =
+                new DelegateCommand(ScheduleListWindowContainer.ActivateOrCreate);
+            NotifyIcon.QuitCommand =
+                new DelegateCommand(Shutdown);
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -45,24 +49,20 @@ namespace VainZero.Timermaid.Desktop
 
         public App()
         {
-            AppMain = AppMain.Load();
+            NotifyIcon = new AppNotifyIcon(new System.ComponentModel.Container());
 
-            ScheduleListWindowContainer =
-                new ScheduleListWindowContainer(() => AppMain.SchedulerTask.Result);
-
-            NotifyIcon =
-                new AppNotifyIcon(new System.ComponentModel.Container())
-                {
-                    ShowCommand =
-                        new DelegateCommand(ScheduleListWindowContainer.ActivateOrCreate),
-                    QuitCommand =
-                        new DelegateCommand(Shutdown),
-                };
-
-            AppMain.ExceptionThrew += (sender, error) =>
+            var notifier = new GuiNotifier(SynchronizationContext.Current);
+            notifier.ErrorNotified += (sender, error) =>
             {
                 NotifyIcon.NotifyError(error);
             };
+
+            AppMain = AppMain.Load(notifier);
+
+            ScheduleListWindowContainer =
+                new ScheduleListWindowContainer(() =>
+                    ScheduleListView.Load(AppMain.SchedulerTask.Result, notifier)
+                );
         }
     }
 }

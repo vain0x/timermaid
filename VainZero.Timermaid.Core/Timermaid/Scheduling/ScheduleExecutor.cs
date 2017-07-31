@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using VainZero.Timermaid.Data.Entity;
+using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.Scheduling
 {
@@ -13,7 +14,7 @@ namespace VainZero.Timermaid.Scheduling
     {
         public event EventHandler<Tuple<Schedule, ScheduleExecutionException>> Executed;
 
-        public event EventHandler<ScheduleExecutionException> ExceptionThrew;
+        public INotifier Notifier { get; }
 
         public void Execute(Schedule schedule)
         {
@@ -43,10 +44,7 @@ namespace VainZero.Timermaid.Scheduling
                 }
             }
 
-            if (error != null)
-            {
-                ExceptionThrew?.Invoke(this, error);
-            }
+            if (error != null) Notifier.NotifyError(error);
 
             Executed?.Invoke(this, Tuple.Create(schedule, error));
         }
@@ -71,6 +69,11 @@ namespace VainZero.Timermaid.Scheduling
 
             timer = default(Timer);
             return false;
+        }
+
+        public ScheduleExecutor(INotifier notifier)
+        {
+            Notifier = notifier;
         }
     }
 }

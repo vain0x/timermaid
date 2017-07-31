@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VainZero.Collections.ObjectModel;
 using VainZero.Timermaid.Data.Entity;
+using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.Scheduling
 {
@@ -19,8 +20,7 @@ namespace VainZero.Timermaid.Scheduling
     {
         public BindableCollection<Schedule> Schedules { get; }
 
-        public ScheduleExecutor Executor { get; } =
-            new ScheduleExecutor();
+        public ScheduleExecutor Executor { get; }
 
         #region Timer
         Dictionary<Schedule, IDisposable> Timers { get; } =
@@ -113,14 +113,19 @@ namespace VainZero.Timermaid.Scheduling
             Detach();
         }
 
-        Scheduler(BindableCollection<Schedule> schedules)
+        Scheduler(BindableCollection<Schedule> schedules, ScheduleExecutor executor)
         {
             Schedules = schedules;
+            Executor = executor;
         }
 
-        public static Scheduler Load(IEnumerable<Schedule> schedules)
+        public static Scheduler Load(IEnumerable<Schedule> schedules, INotifier notifier)
         {
-            var scheduler = new Scheduler(new BindableCollection<Schedule>(schedules));
+            var scheduler =
+                new Scheduler(
+                    new BindableCollection<Schedule>(schedules),
+                    new ScheduleExecutor(notifier)
+                );
             scheduler.Attach();
             return scheduler;
         }

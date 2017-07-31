@@ -27,7 +27,7 @@ namespace VainZero.Timermaid.ScheduleLists
             }
         }
 
-        Func<Scheduler> GetScheduler { get; }
+        Func<ScheduleListView> GetView { get; }
 
         State CurrentOrNull { get; set; }
 
@@ -36,7 +36,7 @@ namespace VainZero.Timermaid.ScheduleLists
             var current = CurrentOrNull;
             if (current == null)
             {
-                var view = ScheduleListView.Load(GetScheduler());
+                var view = GetView();
                 var window =
                     new ScheduleListWindow()
                     {
@@ -72,9 +72,9 @@ namespace VainZero.Timermaid.ScheduleLists
             CurrentOrNull?.Dispose();
         }
 
-        public ScheduleListWindowContainer(Func<Scheduler> getScheduler)
+        public ScheduleListWindowContainer(Func<ScheduleListView> getView)
         {
-            GetScheduler = getScheduler;
+            GetView = getView;
         }
     }
 }
