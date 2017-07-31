@@ -14,19 +14,26 @@ namespace VainZero.Timermaid.ScheduleLists
     {
         public ScheduleListPage ScheduleListPage { get; }
 
+        public DiagnosticPage DiagnosticPage { get; }
+
         public void Dispose()
         {
             ScheduleListPage.Dispose();
         }
 
-        public ScheduleListView(ScheduleListPage scheduleListPage)
+        public ScheduleListView(ScheduleListPage scheduleListPage, DiagnosticPage diagnosticPage)
         {
             ScheduleListPage = scheduleListPage;
+            DiagnosticPage = diagnosticPage;
         }
 
         public static ScheduleListView Load(Scheduler scheduler, INotifier notifier, ILogger logger)
         {
-            return new ScheduleListView(ScheduleListPage.Load(scheduler, notifier, logger));
+            return
+                new ScheduleListView(
+                    ScheduleListPage.Load(scheduler, notifier, logger),
+                    new DiagnosticPage(logger)
+                );
         }
     }
 }

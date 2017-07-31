@@ -1,0 +1,48 @@
+﻿<UserControl
+    x:Class="VainZero.Timermaid.ScheduleLists.DiagnosticPageControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:converters="clr-namespace:VainZero.Windows.Converters"
+    xmlns:local="clr-namespace:VainZero.Timermaid.ScheduleLists"
+    mc:Ignorable="d" 
+    d:DesignWidth="300"
+    d:DesignHeight="300"
+    >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DataGrid
+            Margin="6,3,6,3"
+            Style="{StaticResource NormalDataGridStyle}"
+            ItemsSource="{Binding Items}"
+            >
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Header="Message"
+                    Binding="{Binding Message}"
+                    Width="*"
+                    />
+
+                <DataGridTextColumn
+                    Header="Ocurred At"
+                    Binding="{Binding DateTime, Converter={x:Static converters:DateTimeToLocalTimeStringConverter.Instance}}"
+                    />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="1">
+            <Button
+                HorizontalAlignment="Right"
+                Margin="6,3,6,3"
+                Padding="6,3,6,3"
+                Content="Update"
+                Command="{Binding UpdateCommand}"
+                />
+        </StackPanel>
+    </Grid>
+</UserControl>
