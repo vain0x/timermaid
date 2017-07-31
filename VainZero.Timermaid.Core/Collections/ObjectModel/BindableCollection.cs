@@ -16,7 +16,7 @@ namespace VainZero.Collections.ObjectModel
         : ReactiveCollection<T>
         where T : INotifyPropertyChanged
     {
-        public EventHandler<T> ItemChanged;
+        public event EventHandler<T> ItemChanged;
 
         protected virtual void OnItemChanged(T item)
         {

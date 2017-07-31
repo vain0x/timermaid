@@ -16,6 +16,7 @@ namespace VainZero.Timermaid.Data.Entity
             new SQLiteConnectionStringBuilder()
             {
                 DataSource = "./data/database.sqlite",
+                DateTimeKind = DateTimeKind.Utc,
             }.ToString();
 
         public AppDbContext()

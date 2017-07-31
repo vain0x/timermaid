@@ -10,5 +10,13 @@
     Width="640"
     Height="480"
     >
-    <scheduleLists:ScheduleListPageControl DataContext="{Binding ScheduleListPage}" />
+    <TabControl>
+        <TabItem Header="Schedules">
+            <scheduleLists:ScheduleListPageControl DataContext="{Binding ScheduleListPage}" />
+        </TabItem>
+
+        <TabItem Header="Diagnostic">
+            <scheduleLists:DiagnosticPageControl DataContext="{Binding DiagnosticPage}" />
+        </TabItem>
+    </TabControl>
 </Window>

@@ -12,6 +12,8 @@ using Prism.Commands;
 using VainZero.Collections.ObjectModel;
 using VainZero.Timermaid.Data.Entity;
 using VainZero.Timermaid.Scheduling;
+using VainZero.Timermaid.UI.Logging;
+using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.ScheduleLists
 {
@@ -64,10 +66,17 @@ namespace VainZero.Timermaid.ScheduleLists
 
         static TimeSpan AutoSaveDelay => TimeSpan.FromMilliseconds(500);
 
-        public static ScheduleListPage Load(Scheduler scheduler)
+        public static ScheduleListPage Load(Scheduler scheduler, INotifier notifier, ILogger logger)
         {
             var context = new AppDbContext();
-            var autoSaving = scheduler.Schedules.EnableAutoSave(context, AutoSaveDelay);
+            var autoSaving =
+                scheduler.Schedules
+                .EnableAutoSave(
+                    context,
+                    AutoSaveDelay,
+                    () => logger.Add("Saved schedules."),
+                    notifier.NotifyError
+                );
 
             var dispose =
                 new Action(() =>

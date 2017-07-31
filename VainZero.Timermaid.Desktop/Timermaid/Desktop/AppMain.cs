@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using VainZero.Timermaid.Data.Entity;
 using VainZero.Timermaid.Scheduling;
+using VainZero.Timermaid.UI.Logging;
+using VainZero.Timermaid.UI.Notifications;
 
 namespace VainZero.Timermaid.Desktop
 {
@@ -40,19 +42,22 @@ namespace VainZero.Timermaid.Desktop
             SchedulerTask = schedulerTask;
         }
 
-        static async Task<Scheduler> LoadSchedulerAsync(CancellationToken cancellationToken)
+        static async Task<Scheduler> LoadSchedulerAsync(INotifier notifier, ILogger logger, CancellationToken ct)
         {
             using (var context = new AppDbContext())
             {
-                var schedules = await context.Schedules.ToArrayAsync(cancellationToken);
-                return Scheduler.Load(schedules);
+                var schedules = await context.Schedules.ToArrayAsync(ct).ConfigureAwait(false);
+                return Scheduler.Load(schedules, notifier, logger);
             }
         }
 
-        public static AppMain Load()
+        public static AppMain Load(INotifier notifier, ILogger logger)
         {
             var cts = new CancellationTokenSource();
-            return new AppMain(cts, LoadSchedulerAsync(cts.Token));
+            var schedulerTask =
+                LoadSchedulerAsync(notifier, logger, cts.Token)
+                .NotifiedBy(notifier);
+            return new AppMain(cts, schedulerTask);
         }
     }
 }

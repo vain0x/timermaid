@@ -19,10 +19,9 @@
         <DataGrid
             Grid.Row="1"
             x:Name="dataGrid"
+            Style="{StaticResource NormalDataGridStyle}"
             ItemsSource="{Binding Schedules}"
             Margin="6,3,6,3"
-            AutoGenerateColumns="False"
-            CanUserDeleteRows="False"
             >
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Action">
@@ -66,7 +65,7 @@
                     />
                 <DataGridTextColumn
                     Header="Due Time"
-                    Binding="{Binding DueTime, Converter={x:Static converters:NullableDateTimeToStringConverter.Instance}}"
+                    Binding="{Binding DueTimeUtc, Converter={x:Static converters:NullableDateTimeToStringConverter.Instance}}"
                     Width="120"
                     />
             </DataGrid.Columns>

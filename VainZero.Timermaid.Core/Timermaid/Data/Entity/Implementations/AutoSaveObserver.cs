@@ -13,6 +13,8 @@ namespace VainZero.Timermaid.Data.Entity
         : IDisposable
         where TEntity : class, INotifyPropertyChanged
     {
+        BindableCollection<TEntity> Collection { get; }
+
         DbContext Context { get; }
         DbSet<TEntity> Set { get; }
         TimeSpan Delay { get; }
@@ -20,7 +22,10 @@ namespace VainZero.Timermaid.Data.Entity
         Task LastTask { get; set; } = Task.FromResult(0);
         long revision;
 
-        void SaveAsync()
+        Action OnSaved { get; }
+        Action<Exception> OnError { get; }
+
+        void StartSaveTask()
         {
             var currentRevision = ++revision;
             LastTask =
@@ -28,79 +33,88 @@ namespace VainZero.Timermaid.Data.Entity
                 {
                     await Task.Delay(Delay).ConfigureAwait(false);
                     if (revision != currentRevision) return;
-                    await Context.SaveChangesAsync();
+
+                    try
+                    {
+                        var count = await Context.SaveChangesAsync();
+                        if (count == 0) return;
+                    }
+                    catch (Exception ex)
+                    {
+                        OnError(ex);
+                        return;
+                    }
+
+                    OnSaved();
                 });
         }
 
         public void OnAdded(object sender, TEntity entity)
         {
             Set.Add(entity);
-            SaveAsync();
+            StartSaveTask();
         }
 
         public void OnRemoved(object sender, TEntity entity)
         {
             Set.Remove(entity);
-            SaveAsync();
+            StartSaveTask();
         }
 
         public void OnItemChanged(object sender, TEntity entity)
         {
-            SaveAsync();
+            StartSaveTask();
         }
 
-        public void Dispose()
+        public void Attach()
         {
-            LastTask.Wait();
-        }
-
-        sealed class Subscription
-            : IDisposable
-        {
-            AutoSaveObserver<TEntity> Parent { get; }
-            BindableCollection<TEntity> Collection { get; }
-
-            public void Dispose()
-            {
-                Collection.Added -= Parent.OnAdded;
-                Collection.Removed -= Parent.OnRemoved;
-                Collection.ItemChanged -= Parent.OnItemChanged;
-            }
-
-            public
-                Subscription(
-                    AutoSaveObserver<TEntity> parent,
-                    BindableCollection<TEntity> collection
-                )
-            {
-                Parent = parent;
-                Collection = collection;
-            }
-        }
-
-        public IDisposable Subscribe(BindableCollection<TEntity> collection)
-        {
-            foreach (var entity in collection)
+            foreach (var entity in Collection)
             {
                 Context.Set<TEntity>().Attach(entity);
             }
 
-            collection.Added += OnAdded;
-            collection.Removed += OnRemoved;
-            collection.ItemChanged += OnItemChanged;
-            return new Subscription(this, collection);
+            Collection.Added += OnAdded;
+            Collection.Removed += OnRemoved;
+            Collection.ItemChanged += OnItemChanged;
+        }
+
+        void Detach()
+        {
+            Collection.Added -= OnAdded;
+            Collection.Removed -= OnRemoved;
+            Collection.ItemChanged -= OnItemChanged;
+        }
+
+        public void Dispose()
+        {
+            Detach();
+
+            try
+            {
+                LastTask.Wait();
+            }
+            catch (Exception ex)
+            {
+                OnError(ex);
+            }
         }
 
         public
             AutoSaveObserver(
+                BindableCollection<TEntity> collection,
                 DbContext context,
                 DbSet<TEntity> set,
-                TimeSpan delay
+                TimeSpan delay,
+                Action onSaved,
+                Action<Exception> onError
             )
         {
+            Collection = collection;
             Context = context;
             Set = set;
             Delay = delay;
+            OnSaved = onSaved;
+            OnError = onError;
         }
     }
 }
